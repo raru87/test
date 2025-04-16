@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Ma'lumotlar Bazasi Testi</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
+        .question { background: #fff; padding: 15px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .question h3 { margin: 0 0 10px; }
+        .result { font-size: 18px; margin-top: 20px; }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 16px; border-radius: 8px; border: none; background: #007bff; color: #fff; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Ma'lumotlar Bazasi Testi (20 ta savol)</h1>
+    <form id="quizForm">
+        <!-- Savollar bu yerda joylashadi -->
+    </form>
+    <button onclick="checkAnswers()">Natijani tekshirish</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        const questions = [
+            // 1. Maqsadni aniqlash
+            { q: "Ma'lumotlar bazasi yaratishdan asosiy maqsad nima?", a: "Ma'lumotlarni tizimli saqlash va boshqarish", options: ["Veb sahifa yaratish", "Dasturiy ta'minotni yangilash", "Ma'lumotlarni tizimli saqlash va boshqarish", "Internetga ulanish"] },
+            { q: "Qaysi tizim ma'lumotlarni boshqarish uchun ishlatiladi?", a: "DBMS", options: ["CMS", "DBMS", "OS", "HTML"] },
+            { q: "Ma'lumotlar bazasi foydalanuvchiga qanday imkoniyat yaratadi?", a: "Ma'lumotlarni izlash, tahrirlash va boshqarish", options: ["Foydalanuvchi interfeysini chizish", "Veb sahifa dizaynini yaratish", "Ma'lumotlarni izlash, tahrirlash va boshqarish", "Internet xizmatlarini sozlash"] },
+            { q: "Qanday hollarda ma'lumotlar bazasiga ehtiyoj tug‘iladi?", a: "Katta hajmdagi ma'lumotlar bilan ishlaganda", options: ["HTML sahifa yaratganda", "Foydalanuvchi interfeysi yaratganda", "Katta hajmdagi ma'lumotlar bilan ishlaganda", "Ranglar bilan ishlaganda"] },
+            { q: "Ma'lumotlar bazasi yaratuvchisining vazifasi nima?", a: "Ma'lumotlar strukturasi va bog‘lanishini loyihalash", options: ["Brauzer yaratish", "Ma'lumotlar strukturasi va bog‘lanishini loyihalash", "Internetni sozlash", "Kompyuter o‘rnatish"] },
+
+            // 2. Maydon tanlash
+            { q: "Maydon (field) bu nima?", a: "Ma'lumotlar bazasidagi ustun", options: ["Qator", "Jadval", "Ma'lumotlar bazasidagi ustun", "Qator va ustun aralashmasi"] },
+            { q: "Qaysi biri maydon nomi bo‘lishi mumkin?", a: "ism", options: ["123", "ism", "@data", "*field"] },
+            { q: "Maydon nomi tanlashda nimalarga e'tibor beriladi?", a: "Ma'noli va aniq bo'lishi kerak", options: ["Uzun bo‘lishi kerak", "Noto‘g‘ri belgilar ishlatilishi kerak", "Ma'noli va aniq bo'lishi kerak", "Faqat sonlardan iborat bo‘lishi kerak"] },
+            { q: "Maydon turi nima uchun kerak?", a: "Ma'lumot turini aniqlash uchun", options: ["Parolni yashirish uchun", "Qator sonini aniqlash uchun", "Ma'lumot turini aniqlash uchun", "Veb sahifa yaratish uchun"] },
+            { q: "Maydon nomlari qanday yoziladi?", a: "Lotin harflari bilan, boshida raqam bo‘lmaydi", options: ["Raqam bilan boshlanishi kerak", "Faqat bosh harflar bilan", "Lotin harflari bilan, boshida raqam bo‘lmaydi", "Istalgancha belgilar bilan"] },
+
+            // 3. Ma'lumotlar turlari
+            { q: "'VARCHAR' turi qanday ma'lumot uchun ishlatiladi?", a: "Matnli ma'lumotlar", options: ["Raqamlar", "Sanalar", "Matnli ma'lumotlar", "Rasm fayllar"] },
+            { q: "'INT' turi qanday ma'lumotlar uchun?", a: "Butun sonlar", options: ["Matnlar", "Sanalar", "Butun sonlar", "Haqiqiy sonlar"] },
+            { q: "'DATE' turi nima uchun kerak?", a: "Sana va vaqtni saqlash uchun", options: ["Ranglar", "Matn", "Sana va vaqtni saqlash uchun", "Raqamlar"] },
+            { q: "Qaysi tur o‘zgaruvchan uzunlikdagi matn uchun?", a: "VARCHAR", options: ["TEXT", "CHAR", "VARCHAR", "NUMBER"] },
+            { q: "Qaysi biri raqamli ma'lumot turi?", a: "INT", options: ["CHAR", "TEXT", "VARCHAR", "INT"] },
+
+            // 4. Jadval yaratish
+            { q: "Ma'lumotlar bazasi jadvali bu nima?", a: "Ma'lumotlarni saqlovchi tuzilma", options: ["Fayl", "Matn", "Kod", "Ma'lumotlarni saqlovchi tuzilma"] },
+            { q: "Jadval yaratishda nima belgilanadi?", a: "Maydonlar va ularning turlari", options: ["Foydalanuvchi ismi", "Kod tili", "Maydonlar va ularning turlari", "Fayl yo‘li"] },
+            { q: "SQLda jadval yaratish uchun qaysi buyruq ishlatiladi?", a: "CREATE TABLE", options: ["NEW TABLE", "TABLE MAKE", "CREATE TABLE", "ADD TABLE"] },
+            { q: "Jadvaldagi har bir ustun nimani bildiradi?", a: "Alohida maydonni", options: ["Jadval nomini", "Satrni", "Butun jadvalni", "Alohida maydonni"] },
+            { q: "Jadvaldagi har bir satr nimani bildiradi?", a: "Ma'lumot yozuvini", options: ["Maydon turini", "Jadval nomini", "Ma'lumot yozuvini", "Kod blokini"] }
+        ];
+
+        const form = document.getElementById('quizForm');
+
+        questions.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'question';
+            div.innerHTML = `<h3>${index + 1}. ${item.q}</h3>` +
+                item.options.map(opt => `
+                    <label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label><br>`
+                ).join('');
+            form.appendChild(div);
+        });
+
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((item, index) => {
+                const answer = document.querySelector(`input[name="q${index}"]:checked`);
+                if (answer && answer.value === item.a) {
+                    score++;
+                }
+            });
+            document.getElementById('result').textContent = `Siz ${score} ta to'g'ri javob berdingiz / 20.`;
+        }
+    </script>
+</body>
+</html>
